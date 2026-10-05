@@ -19,3 +19,6 @@ PROJECT.md
 
 # saved reports
 results/
+
+# Postgres data (docker-compose bind mount)
+data/
