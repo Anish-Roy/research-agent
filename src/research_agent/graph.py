@@ -7,11 +7,15 @@ in PROJECT.md is not a separate conditional edge: `approve_plan` and `self_check
 `research_one` to `write` runs `write` once, after every parallel task has finished.
 """
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from langgraph.checkpoint.base import BaseCheckpointSaver
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
+from research_agent.config import settings
 from research_agent.nodes import (
     approve_plan,
     approve_report,
@@ -50,3 +54,14 @@ def build_graph(checkpointer: BaseCheckpointSaver | None = None) -> CompiledStat
     builder.add_edge("save_report", END)
 
     return builder.compile(checkpointer=checkpointer)
+
+
+@asynccontextmanager
+async def postgres_checkpointer() -> AsyncIterator[AsyncPostgresSaver]:
+    """Open a checkpointer on `DATABASE_URL`, creating its tables if they don't exist.
+
+    Use one per process: `async with postgres_checkpointer() as saver:`.
+    """
+    async with AsyncPostgresSaver.from_conn_string(settings.database_url) as saver:
+        await saver.setup()
+        yield saver
