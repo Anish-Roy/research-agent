@@ -1,0 +1,21 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+
+
+.env
+
+/scripts
+
+# personal files
+PROJECT.md
+.claude/
+
+# saved reports
+results/
