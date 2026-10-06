@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     langfuse_public_key: str = ""
     langfuse_secret_key: str = ""
     langfuse_host: str = "https://cloud.langfuse.com"
+    langfuse_tracing_environment: str = "development"
 
     results_dir: Path = PROJECT_ROOT / "results"
 

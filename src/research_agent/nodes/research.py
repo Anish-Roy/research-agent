@@ -90,7 +90,7 @@ async def _search_query(task: ResearchTask) -> str:
         )
     else:
         prompt = QUERY_PROMPT.format(sub_question=task["sub_question"])
-    reply = await get_model("planner").ainvoke(prompt)
+    reply = await get_model("planner", "write-search-query").ainvoke(prompt)
     return reply.text.strip().strip('"') or task["sub_question"]
 
 

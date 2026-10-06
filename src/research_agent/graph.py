@@ -7,7 +7,6 @@ in PROJECT.md is not a separate conditional edge: `approve_plan` and `self_check
 `research_one` to `write` runs `write` once, after every parallel task has finished.
 """
 
-
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
