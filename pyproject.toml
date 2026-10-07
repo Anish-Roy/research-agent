@@ -37,6 +37,7 @@ dev = [
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+pythonpath = ["."]  # so tests can import the top-level evals package
 markers = ["integration: hits real external services (needs API keys)"]
 
 [tool.ruff]
