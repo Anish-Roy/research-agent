@@ -44,7 +44,7 @@ def fakes(monkeypatch, tmp_path):
     gaps: list[list[dict]] = []
     model = FakeModel(calls, gaps)
     for module in (planning, research, review, writing):
-        monkeypatch.setattr(module, "get_model", lambda role: model)
+        monkeypatch.setattr(module, "get_model", lambda role, step: model)
 
     async def get_tools():
         return {"tavily_search": "tavily_search", "tavily_extract": "tavily_extract"}

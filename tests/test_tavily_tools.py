@@ -1,9 +1,12 @@
+import json
+
 import pytest
 from langchain_core.tools import StructuredTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
+from mcp.types import CallToolResult, TextContent
 
 from research_agent.config import settings
-from research_agent.tools.tavily import get_tavily_tools, tavily_connection
+from research_agent.tools.tavily import flag_tavily_errors, get_tavily_tools, tavily_connection
 
 
 def _fake_tool(name: str) -> StructuredTool:
@@ -46,3 +49,20 @@ async def test_real_search():
     tools = {t.name.replace("-", "_"): t for t in await get_tavily_tools()}
     result = await tools["tavily_search"].ainvoke({"query": "LangGraph"})
     assert result
+
+
+async def test_error_body_becomes_mcp_error():
+    async def handler(request):
+        body = {"error": "Search failed", "status": 429}
+        return CallToolResult(content=[TextContent(type="text", text=json.dumps(body))])
+
+    result = await flag_tavily_errors(None, handler)
+    assert result.isError
+
+
+async def test_normal_result_passes_through():
+    async def handler(request):
+        return CallToolResult(content=[TextContent(type="text", text='{"results": []}')])
+
+    result = await flag_tavily_errors(None, handler)
+    assert not result.isError

@@ -36,7 +36,8 @@ async def plan(state: ResearchState) -> dict:
         current = "\n".join(f"- {q}" for q in state.get("sub_questions", []))
         prompt += REVISE_PROMPT.format(sub_questions=current, feedback=feedback)
 
-    result = await get_model("planner").with_structured_output(Plan).ainvoke(prompt)
+    model = get_model("planner", "generate-plan").with_structured_output(Plan)
+    result = await model.ainvoke(prompt)
     return {"sub_questions": result.sub_questions}
 
 

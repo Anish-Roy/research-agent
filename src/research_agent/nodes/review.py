@@ -71,7 +71,8 @@ async def self_check(state: ResearchState) -> Command[Literal["research_one", "a
         draft=state.get("draft", ""),
         sources=format_sources(sources),
     )
-    result = await get_model("planner").with_structured_output(SelfCheck).ainvoke(prompt)
+    model = get_model("planner", "check-claims").with_structured_output(SelfCheck)
+    result = await model.ainvoke(prompt)
     gaps = [_to_gap(g, sources, sub_questions, state["question"]) for g in result.gaps]
 
     loops = state.get("research_loops", 0)

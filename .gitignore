@@ -20,5 +20,8 @@ PROJECT.md
 # saved reports
 results/
 
+# skills CLI lockfile
+skills-lock.json
+
 # Postgres data (docker-compose bind mount)
 data/

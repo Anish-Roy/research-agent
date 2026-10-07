@@ -58,7 +58,7 @@ async def write(state: ResearchState) -> dict:
             draft=state["draft"], issues="\n".join(f"- {i}" for i in issues)
         )
 
-    reply = await get_model("writer").ainvoke(prompt)
+    reply = await get_model("writer", "write-report").ainvoke(prompt)
     return {"draft": reply.text}
 
 
