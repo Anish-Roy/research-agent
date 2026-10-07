@@ -1,4 +1,5 @@
 import json
+from types import SimpleNamespace
 
 import pytest
 from langchain_core.tools import StructuredTool
@@ -6,7 +7,8 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from mcp.types import CallToolResult, TextContent
 
 from research_agent.config import settings
-from research_agent.tools.tavily import flag_tavily_errors, get_tavily_tools, tavily_connection
+from research_agent.tools import tavily
+from research_agent.tools.tavily import get_tavily_tools, retry_tavily_errors, tavily_connection
 
 
 def _fake_tool(name: str) -> StructuredTool:
@@ -51,18 +53,55 @@ async def test_real_search():
     assert result
 
 
-async def test_error_body_becomes_mcp_error():
-    async def handler(request):
-        body = {"error": "Search failed", "status": 429}
-        return CallToolResult(content=[TextContent(type="text", text=json.dumps(body))])
-
-    result = await flag_tavily_errors(None, handler)
-    assert result.isError
+def _result(body: dict) -> CallToolResult:
+    return CallToolResult(content=[TextContent(type="text", text=json.dumps(body))])
 
 
-async def test_normal_result_passes_through():
-    async def handler(request):
-        return CallToolResult(content=[TextContent(type="text", text='{"results": []}')])
+@pytest.fixture
+def handler(monkeypatch):
+    """A tool handler that replays `responses` in order, with sleeps skipped."""
+    delays: list[float] = []
 
-    result = await flag_tavily_errors(None, handler)
+    async def no_sleep(delay):
+        delays.append(delay)
+
+    monkeypatch.setattr(tavily.asyncio, "sleep", no_sleep)
+    responses: list[CallToolResult] = []
+
+    async def call(request):
+        return responses.pop(0)
+
+    return SimpleNamespace(call=call, responses=responses, delays=delays)
+
+
+REQUEST = SimpleNamespace(name="tavily_search")
+RATE_LIMITED = {"error": "Search failed", "status": 429}
+
+
+async def test_retries_rate_limit_until_success(handler):
+    handler.responses[:] = [_result(RATE_LIMITED), _result(RATE_LIMITED), _result({"results": []})]
+    result = await retry_tavily_errors(REQUEST, handler.call)
     assert not result.isError
+    assert len(handler.delays) == 2
+    assert handler.delays[1] > handler.delays[0]  # backs off
+
+
+async def test_flags_error_after_last_retry(handler):
+    handler.responses[:] = [_result(RATE_LIMITED)] * (tavily.MAX_RETRIES + 1)
+    result = await retry_tavily_errors(REQUEST, handler.call)
+    assert result.isError
+    assert len(handler.delays) == tavily.MAX_RETRIES
+
+
+async def test_does_not_retry_client_errors(handler):
+    handler.responses[:] = [_result({"error": "Unauthorized", "status": 401})]
+    result = await retry_tavily_errors(REQUEST, handler.call)
+    assert result.isError
+    assert handler.delays == []
+
+
+async def test_normal_result_passes_through(handler):
+    handler.responses[:] = [_result({"results": []})]
+    result = await retry_tavily_errors(REQUEST, handler.call)
+    assert not result.isError
+    assert handler.delays == []
