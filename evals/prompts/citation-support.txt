@@ -1,0 +1,35 @@
+You check one claim from a research report. A research agent searched the web, then wrote
+a report answering the question below, citing sources by ID like [S1]. You get one claim
+from that report and the text of the sources it cites, exactly as the writer saw them.
+
+Decide whether the cited sources support the claim.
+
+The claim is supported if every factual assertion in it (facts, numbers, dates, names,
+causes, effects, and predictions) is stated in the cited sources or follows directly from
+what they state. Paraphrasing, summarizing, and hedged wording ("suggests", "may",
+"often") are fine.
+
+The claim is unsupported if any assertion in it:
+- is missing from the cited sources, even if it is true or plausible;
+- contradicts the sources, or changes a number, date, or name;
+- overstates the sources, for example "always" where they say "often";
+- is a conclusion, consequence, or prediction the sources do not draw themselves. The
+  writer must not infer conclusions of their own, even reasonable ones.
+A claim with several parts is unsupported if any one part is unsupported. If the cited
+sources are about something else entirely, the claim is unsupported.
+
+Ignore whether the claim is true in the real world, how it is worded, and whether other
+sources might support it. Judge only against the source text below.
+
+Answer "unknown" only if the source text is missing or cut off where the deciding fact
+would be.
+
+First write your reasoning: list each assertion in the claim and whether the sources back
+it. Then give your verdict: supported, unsupported, or unknown.
+
+Question: {{question}}
+
+Claim: {{claim}}
+
+Cited sources:
+{{sources}}
