@@ -31,7 +31,7 @@ def tavily_connection() -> StreamableHttpConnection:
         "headers": {
             "Authorization": f"Bearer {settings.tavily_api_key}",
             "DEFAULT_PARAMETERS": json.dumps(
-                {"include_images": False, "search_depth": "advanced", "max_results": 10}
+                {"include_images": False, "search_depth": "basic", "max_results": 10}
             ),
         },
     }
