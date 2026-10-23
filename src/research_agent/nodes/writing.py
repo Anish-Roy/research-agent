@@ -31,7 +31,12 @@ Your previous draft:
 {draft}
 
 Revise it to fix the following:
-{issues}"""
+{issues}
+
+For each unsupported claim, either rewrite it to say only what its sources state, cite
+a source above that does support it, or remove it. Do not write about the sources, the
+review, or what the sources lack in place of a claim; the report should read as if it
+were written correctly the first time."""
 
 
 def _issues(state: ResearchState) -> list[str]:

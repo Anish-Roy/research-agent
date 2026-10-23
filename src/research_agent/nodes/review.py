@@ -9,7 +9,7 @@ from langchain_core.runnables import RunnableConfig
 from langgraph.types import Command, interrupt
 from pydantic import BaseModel, Field
 
-from research_agent.citations import format_sources
+from research_agent.citations import cited_ids, format_sources
 from research_agent.config import settings
 from research_agent.models import get_model
 from research_agent.nodes.research import gap_tasks
@@ -19,13 +19,22 @@ logger = logging.getLogger(__name__)
 
 MAX_RESEARCH_LOOPS = 2
 
-SELF_CHECK_PROMPT = """Check the draft report below against its sources.
+SELF_CHECK_PROMPT = """Check the draft report below against the sources it cites.
 
-For each factual claim, check that the sources it cites (like [S1]) actually support it.
-List only the claims that fail: the source doesn't say it, says something different,
-or the claim has no citation. For each one, give the sub-question it answers (copied
+For each factual claim, check that the sources it cites (like [S1]) support it. A claim
+is supported if every assertion in it (facts, numbers, dates, names, causes, effects,
+predictions) is stated in its cited sources or follows directly from what they state.
+Paraphrasing, summarizing, and hedged wording ("suggests", "may") are fine. A source that
+states something generally supports the claim applying it to the question's setting; do
+not fail a claim only because the source doesn't mention that setting specifically.
+
+A claim fails if any assertion in it is missing from its cited sources, contradicts them,
+overstates them, or is a conclusion or prediction the sources don't draw themselves. A
+factual claim with no citation also fails.
+
+List only the claims that fail. For each one, give the sub-question it answers (copied
 exactly from the list below), the claim quoted briefly, the source IDs it cites, and the
-reason it failed. If every claim is supported, return an empty list.
+specific assertion that isn't backed. If every claim is supported, return an empty list.
 
 Sub-questions:
 {sub_questions}
@@ -41,7 +50,7 @@ class _Gap(BaseModel):
     sub_question: str = Field(description="The sub-question the claim answers, copied exactly")
     claim: str = Field(description="The unsupported claim, quoted briefly")
     source_ids: list[str] = Field(description="Source IDs the claim cites, like S1; empty if none")
-    reason: str = Field(description="Why the cited sources don't support it")
+    reason: str = Field(description="The specific assertion the cited sources don't back")
 
 
 class SelfCheck(BaseModel):
@@ -63,13 +72,16 @@ async def self_check(state: ResearchState) -> Command[Literal["research_one", "a
     """Find unsupported claims and re-research them, up to MAX_RESEARCH_LOOPS times.
 
     Once the cap is reached, the draft goes to human review with the gaps left in state.
+    Only the sources the draft cites are shown, so the check isn't searching all of them.
     """
     sources = state.get("sources", [])
     sub_questions = state.get("sub_questions", [])
+    draft = state.get("draft", "")
+    cited = set(cited_ids(draft))
     prompt = SELF_CHECK_PROMPT.format(
         sub_questions="\n".join(f"- {q}" for q in sub_questions),
-        draft=state.get("draft", ""),
-        sources=format_sources(sources),
+        draft=draft,
+        sources=format_sources([s for s in sources if s["id"] in cited]),
     )
     model = get_model("planner", "check-claims").with_structured_output(SelfCheck)
     result = await model.ainvoke(prompt)
