@@ -14,6 +14,9 @@ Use only the sources given.
 Rules:
 - Cite every factual claim with the ID of the source that supports it, like [S1].
   For several sources write [S1][S3]. Use only the IDs listed below.
+- State only what the sources say. Do not add conclusions, consequences, predictions,
+  or reasons of your own, even reasonable ones. If the sources don't draw a conclusion,
+  don't draw it for them.
 - If the sources don't cover something, say so instead of guessing.
 - Use markdown with short sections. Do not add a reference list; the IDs are enough.
 
