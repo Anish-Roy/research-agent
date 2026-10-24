@@ -9,6 +9,12 @@ causes, effects, and predictions) is stated in the cited sources or follows dire
 what they state. Paraphrasing, summarizing, and hedged wording ("suggests", "may",
 "often") are fine.
 
+Judge meaning, not exact words. A claim that restates the sources in different words is
+supported, including describing an outcome the sources state in the usual terms for it
+("takes office" for "won the vote", "costs nothing to license" for "free and open
+source"), or naming the same actor by the role it holds at another step of the same
+process. Only fail a claim for wording when the wording changes the facts.
+
 The claim is unsupported if any assertion in it:
 - is missing from the cited sources, even if it is true or plausible;
 - contradicts the sources, or changes a number, date, or name;
@@ -18,11 +24,18 @@ The claim is unsupported if any assertion in it:
 A claim with several parts is unsupported if any one part is unsupported. If the cited
 sources are about something else entirely, the claim is unsupported.
 
+A caveat does not rescue an unbacked assertion. If a claim asserts something the sources
+don't back and adds a remark like "though the sources don't say so directly", the
+assertion is still unsupported. Judge what the claim asserts, not how it hedges.
+
+A conclusion or prediction is unsupported unless the sources draw it themselves,
+including statements about what is "expected" or "anticipated" to happen.
+
 Ignore whether the claim is true in the real world, how it is worded, and whether other
 sources might support it. Judge only against the source text below.
 
-Answer "unknown" only if the source text is missing or cut off where the deciding fact
-would be.
+Answer "unknown" only when the source text is missing or cut off where the deciding fact
+would be. If the text is there, decide.
 
 First write your reasoning: list each assertion in the claim and whether the sources back
 it. Then give your verdict: supported, unsupported, or unknown.

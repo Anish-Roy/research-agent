@@ -66,7 +66,7 @@ Self-check: flagged as a gap
 > On POST and DELETE operations, SQLite wins consistently. These endpoints trigger ORM cascades (child assets, permissions, org_tree rebuild), and each recursive call goes through the TCP socket on PostgreSQL. SQLite resolves the same operations in-process.
 > PATCH /api/applied-controls/:id/ is the exception: PostgreSQL wins here at 620ms vs 8
 
-label: supported
+label: unsupported
 
 note: Source 1 explicitly states that SQLite can be faster than PostgreSQL in the right conditions and reports single/bulk read benchmarks. Source 2 provides benchmark evidence that SQLite outperforms PostgreSQL on several endpoints, including some read-heavy/complex queries. The claim’s qualification about light workloads and low write concurrency is consistent with the sources, although neither source states that exact formulation verbatim. 
 
@@ -98,7 +98,7 @@ Self-check: not flagged
 > SQLite is best for single-machine, low-traffic applications with small databases (up to 100GB). It has limited scalability due to its reliance on a single disk file and serialized write locking.
 > Conversely, PostgreSQL is designed for large-scale, high-traffic applications. It scales well in terms of storage, complexity, concurrency, read/write performance, and can handle hundreds to thousands of concurrent users. It supports horizontal scalab
 
-label: supported
+label: unsupported
 
 note: The source explicitly states that PostgreSQL has a more comprehensive feature set, advanced indexing options, and greater SQL capabilities than SQLite. “Data integrity mechanisms” is somewhat broader than the source’s wording, but the overall claim is adequately supported. 
 
@@ -276,7 +276,7 @@ Self-check: not flagged
 > mRNA Vaccine
 > An mRNA vaccine is a preventive treatment that trains your body to fight infectious diseases. Only COVID-19 vaccines currently use mRNA technology. They work by giving your body instructions to make a small part of the virus so your immune system can generate tools to fight an infection if it sees the virus again in the
 
-label: supported
+label: unsupported
 
 note: Source 1 explicitly states that mRNA vaccines have shorter manufacturing times and can be quickly updated to match circulating strains. This supports the claim about quicker design/production and adaptability during rapidly changing epidemiological conditions. Source 2 supports the underlying mechanism but does not directly address rapid production. 
 
@@ -293,7 +293,7 @@ Self-check: flagged as a gap
 > Summary of the evidence
 > Durability of immune responses to mRNA- and adjuvanted protein-based SARS-CoV-2 vaccines
 
-label: supported
+label: unsupported
 
 note: The source explicitly states that the durability of individual immune-memory components, including memory B cells and CD4⁺/CD8⁺ T cells, remains incompletely characterized. It also discusses the durability of antibody titers and vaccine-induced immune responses. This supports the claim, although the exact wording “antibody titers generally decline over time” is not stated explicitly in the provided excerpt. 
 
@@ -417,7 +417,7 @@ Self-check: flagged as a gap
 > 4. Leader Completeness if a log entry is committed in a given term, then that entry wil be committed in the logs of the leaders for all higher-numbered terms. [...] > Linearizable reads must not return stale data, and Raft needs two extra precautions to guarantee this without using the log. First, a leader must have the latest information on which entries are committed. The Leader Completeness Property guarantees that a leader has all committed entries, but at the start of its term, it may not know which those are. To find out, it needs to commit an entry from its term. Raft handles this by having each leader commit a blank no-op entry into the log at the start of its term. Second, a leader must check whether it has been deposed before processing a read-only request (its information may be stale if a more recent leader has been elected). Raft handles this by having the leader exchange heartbeat messages with a majority of the cluster before [...] Raft’s basic consensus algorithm depends on only two message (RPC) types: RequestVote and AppendEntries. RequestVote messages are initiated by candidates during elections, and AppendEntries messages are initiated by leaders to transfer log entries, and as a heartbeat. A third message type, InstallSnapshot is also used for transferring snapshots between servers.
 > The full Raft paper is very readable, and runs to 18
 
-label: supported
+label: unsupported
 
 note: The sources explicitly state that Raft retries RPCs indefinitely and that its RPCs are idempotent, so duplicate `AppendEntries` requests cause no harm. However, the claim’s specific framing around “leader failure recovery mechanisms” is not directly established; the support is for safe retries/duplicate requests generally.
 
@@ -558,7 +558,7 @@ Self-check: not flagged
 > This is the stable release of Python 3.12.0
 > Python 3.12.0 is the newest major release of the Pyt
 
-label: supported
+label: unsupported
 
 note: The source explicitly states that the deprecated `wstr` and `wstr_length` members of Unicode objects were removed in Python 3.12, per PEP 623. The claim accurately reflects this, although “enhance the usability and performance” is an inferred rationale rather than something explicitly stated in the provided source. 
 
@@ -741,7 +741,7 @@ Self-check: not flagged
 > Summary
 > There are many available options to control varroa mite populations in honey bee colonies. Each option has advantages and disadvantages, but understanding the implications of each choice is an important part of decision-making. In an IPM approach, beekeepers should heavily rely on cultural and mechanical practices for mite control before using soft or hard chemicals. Mite monitoring and rotation of treatments are critical for effective management and reduction of resistance to chemicals in these pests. Understanding and considering all of the options before deciding on how to proceed will help to improve the success and the well-being of the honey bees. [...] or action thresholds vary, but are aimed at keeping mite levels below or around a mean abundance of 2 mites per 100 bees. This is a very low number, which can be maintained using a number of practices that vary from cultural to chemical (Figure 3). Beekeepers can use an integrated pest management (IPM) approach in which they use several different mite control techniques in combination or in rotation throughout the year (Figure 3). A combination of various treatment protocols is effective, and it reduces the likelihood that resistance to chemicals will develop, as happens when only one treatment method is used repeatedly. [...] Monitoring levels of varroa mites in colonies is important for determining the need for and the type of treatment. Beekeepers generally measure the mean abundance of mites (number of mites per 100 bees) on a regular schedule, such as monthly, to determine when the population of mites found on adult worker bees is exceeding a threshold. This can be accomplished throughseveral methods, including sugar rolls, alcohol washes, or through the use of a sticky board. Alcohol washes are the most accurate method for monitoring mite populations. For apiaries with a large number of colonies, sampling just 20% of them will provide sufficient information about mite populations to determine whet
 
-label: supported
+label: unsupported
 
 note: Source 1 supports screened/mesh bottom boards as a way to facilitate and monitor natural mite drop, and recommends husbandry practices to minimize drifting. Source 2 explicitly states that cultural and mechanical practices are core Varroa-control methods, though the provided excerpt does not specifically mention colony spacing. 
 
@@ -943,7 +943,7 @@ Self-check: not flagged
 > 15.16% 27.42% How I measure workforce productivity.
 > Key takeaway: One-size-fits-all productivity assessments are no longer effective in today's work environments. Productivity targets and results must be based on more instructive metrics than simply time inputs, including role function, impact on customer and business needs, technology usage, and more. [...] State of Remote Companies 2022 201-500 18.87% 51-200 38.06% < 50 32.42% 501-1000 7.90% 1000+ 2.74% According to our research, companies that had between 51 and 200 employees are the most prominent adopters of remote work (38.06%). Not far behind, companies with 50 employees or fewer are the next most likely to work remotely (32.42%). The most significant increase in the adoption of remote work since our last research in 2019 was seen in enterprise companies, where adoption grew from 2.2% to 10.64% Key take
 
-label: supported
+label: unsupported
 
 note: Source 1 directly supports the claim that companies recognize productivity gains from remote work. It also explicitly mentions that 85% of business leaders struggle to trust remote employees despite stable or improved output. Source 2 supports the concern about measuring productivity in remote/hybrid settings, though it does not directly establish concerns about trust or employee engagement.
 

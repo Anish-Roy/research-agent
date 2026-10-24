@@ -14,8 +14,10 @@ import argparse
 import asyncio
 from pathlib import Path
 from typing import Literal
+from urllib.parse import quote
 
 from langfuse import Evaluation
+from langfuse.langchain import CallbackHandler
 from langfuse.model import TextPromptClient
 from pydantic import BaseModel, Field
 
@@ -24,7 +26,7 @@ from research_agent.citations import format_sources
 from research_agent.config import settings
 from research_agent.models import get_model
 from research_agent.state import Source
-from research_agent.tracing import get_langfuse
+from research_agent.tracing import get_langfuse, tracing_enabled
 
 PROMPTS_DIR = Path(__file__).parent / "prompts"
 MAX_PARALLEL_JUDGE_CALLS = 5
@@ -51,9 +53,14 @@ class ClaimVerdict(BaseModel):
 async def judge_claim(
     prompt: TextPromptClient, question: str, claim: str, sources: list[Source]
 ) -> ClaimVerdict:
+    """One verdict. The call is traced under the current observation, so the judge's
+    reasoning is visible in Langfuse next to the score it produced."""
     text = prompt.compile(question=question, claim=claim, sources=format_sources(sources))
     model = get_model("judge", "judge-citation-support").with_structured_output(ClaimVerdict)
-    return await model.ainvoke(text)
+    callbacks = (
+        [CallbackHandler(public_key=settings.langfuse_public_key)] if tracing_enabled() else []
+    )
+    return await model.ainvoke(text, config={"callbacks": callbacks})
 
 
 def citation_support_evaluator(prompt: TextPromptClient):
@@ -122,8 +129,9 @@ def sync(judge: str) -> None:
 
 
 def promote(judge: str, version: int) -> None:
+    # This endpoint takes the name in the URL path and the SDK doesn't encode the "/".
     get_langfuse().api.prompt_version.update(
-        name=prompt_name(judge), version=version, new_labels=["production"]
+        name=quote(prompt_name(judge), safe=""), version=version, new_labels=["production"]
     )
     print(f"{prompt_name(judge)} v{version} is now production")
 
